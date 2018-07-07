@@ -58,7 +58,7 @@ def addContents():
     '''
     f = None
     path = getTargetPath()
-    print(path)
+    print('目录文件位置：', path)
 
     content = input('请输入将目录放置哪个层级下：')
     if (content == ''):
@@ -75,17 +75,24 @@ def addContents():
                 position = f.tell()
                 flag = False
                 break
+            # 文件已读到末尾
+            if (line == ''):
+                break
         
-        # 文件中未出现制定的目录层次
+        # 文件中未出现指定的目录层次
         if (flag):
-            f.write('\n' + content)
+            f.write('\n\n' + content)
             writeContext(f)
         else:
             f.seek(position)
             writeContext(f)
+            remain_str = getRemainStr(position, path)
+            f.write(remain_str)
 
-    # except:
-    #     print('读取目标文件失败!!!')
+        print('目录更新完成...')
+
+    except:
+        print('读取目标文件失败!!!')
     finally:
         if (f):
             f.close()
@@ -95,6 +102,24 @@ def writeContext(f):
     url = input('请输入链接地址:')
     str = '\n' + '-    [' + title.strip() + '](' + url.strip() + ')'
     f.write(str)
+
+def getRemainStr(position, path):
+    '''
+    获取文件剩余的内容
+    '''
+    rf = None
+    str = ''
+    try:
+        rf = open(path, 'r', encoding='utf-8')
+        rf.seek(position)
+        for line in rf:
+            str = str + line
+    except:
+        print('读取文件失败!!')
+    finally:
+        if (rf):
+            rf.close()
+    return str
 
 def main():
     addContents()
